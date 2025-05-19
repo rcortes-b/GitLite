@@ -12,4 +12,7 @@ A minimal Git implementation built from scratch to deepen understanding of versi
 
 ---
 
+## Goal
+This project goal is for a better understanding and usage of Git and also my first time using python
 
+---
