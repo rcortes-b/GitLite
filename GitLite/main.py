@@ -1,6 +1,6 @@
-import sys
+import sys, os
 from args import parse_args
-from messages import *
+from commands.utils import *
 
 def main():
 	if len(sys.argv) < 2:
