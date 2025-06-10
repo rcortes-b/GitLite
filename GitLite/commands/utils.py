@@ -11,11 +11,12 @@ def usage_msg():
 	'\tcommit')
 
 def find_gitlite_repo(path='.'):
-    path = os.path.abspath(path)
-
-    while path != os.path.dirname(path):
-        if os.path.isdir(os.path.join(path, '.gitlite')):
-            return os.path.join(path, '.gitlite')
-        path = os.path.dirname(path)
-
-    return None
+	try:
+		path = os.path.abspath(path)
+		while path != os.path.dirname(path):
+			if os.path.isdir(os.path.join(path, '.gitlite')):
+				return os.path.join(path, '.gitlite')
+			path = os.path.dirname(path)
+		raise Exception('fatal: not gitlite repository found')
+	except Exception as e: 
+		print('{e}')
