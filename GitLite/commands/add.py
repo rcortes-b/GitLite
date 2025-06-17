@@ -1,5 +1,5 @@
 import os
-from commands.utils import find_gitlite_repo
+from commands.utils import find_gitlite_repo, get_all_files
 
 def add(args):
 	### Index file creation
@@ -16,11 +16,6 @@ def add(args):
 	except Exception as e:
 		print(f"fatal: pathspec '{e}' did not match any files")
 	###
-	all_files = []
-	root_path = find_gitlite_repo(False)
-	for rootdir, dirname, filenames in os.walk(root_path):
-		for filename in filenames:
-			#print(f".{rootdir.replace(f'{root_path}', '')}/{filename}")
-			all_files.append(os.path.join(rootdir.replace(root_path, ''), filename).replace('/', '', 1))
-	for file in all_files:
-		print(file)
+	all_files = get_all_files()
+	for f in all_files:
+		print(f)
