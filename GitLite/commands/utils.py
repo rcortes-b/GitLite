@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 def usage_msg():
 	print('Usage: gitlite <options> <command> <command_options> <...>\n\n' \
@@ -22,6 +22,7 @@ def find_gitlite_repo(root=True):
 		raise Exception('fatal: not gitlite repository found')
 	except Exception as e: 
 		print('{e}')
+		sys.exit(1)
 
 def get_all_files():
 	all_files = []
@@ -43,6 +44,7 @@ def get_ignored_files(path=find_gitlite_repo(False)):
 	with open(os.path.join(path, '.gitliteignore'), 'r') as f:
 		for line in f:
 			lines.append(line.strip())
+	lines.append(".gitlite/")
 	return lines
 
 def path_ignored(file, ignored_list, path):

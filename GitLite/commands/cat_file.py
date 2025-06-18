@@ -1,4 +1,4 @@
-import os, zlib
+import os, sys, zlib
 from commands.utils import find_gitlite_repo
 
 class fileAttributes:
@@ -33,3 +33,4 @@ def cat_file(args):
 				print(fileObject.body)
 	except Exception as e:
 		print(f'Error: {e}')
+		sys.exit(1)
