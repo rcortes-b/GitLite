@@ -24,15 +24,19 @@ def add(args):
 	if args.files:
 		path = gitlite_path.replace('.gitlite', '')
 		index_entries = read_index(index_path)
-		print('Before', len(index_entries))
+		#print('Before', len(index_entries))
 		print('\n')	
 		for files in args.files:
 			normalized_path = os.path.abspath(files).replace(path, '')
 			for f in all_files:
-				if f == normalized_path:
+				if f == normalized_path and index_entries is not None:
 					for entry in index_entries:
 						if entry['path'] == f:
 							index_entries.remove(entry)
+				elif f == normalized_path and index_entries is None:
+					arg_files.append(f)
+		if arg_files:
+			all_files = arg_files
 		#Check what to delete
 		write_index(all_files, index_path, index_entries)
 	else:

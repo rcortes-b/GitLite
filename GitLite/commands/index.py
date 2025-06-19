@@ -70,61 +70,71 @@ def write_index(paths, index_path, index_entries=None):
     with open(index_path, 'wb') as f:
         f.write(data + checksum)
 
+import struct
+
 def read_index(path):
-    with open(path, 'rb') as f:
-        data = f.read()
+    try:
+        with open(path, 'rb') as f:
+            data = f.read()
 
-    entries = []
-    pos = 0
+        if len(data) <= 0:
+            return None
 
-    # Read header
-    signature, version, count = struct.unpack('!4sLL', data[:12])
-    pos = 12
+        entries = []
+        pos = 0
 
-    if signature != b'DIRC':
-        raise Exception("Not a valid index file")
+        # Read header
+        signature, version, count = struct.unpack('!4sLL', data[:12])
+        pos = 12
 
-    for _ in range(count):
-        entry_start = pos
+        if signature != b'DIRC':
+            raise Exception("Not a valid index file")
 
-        # Read fixed-size header (62 bytes)
-        fields = struct.unpack("!LLLLLLLLLL20sH", data[pos:pos+62])
-        (
-            ctime_s, ctime_n,
-            mtime_s, mtime_n,
-            dev, ino,
-            mode, uid, gid, size,
-            sha1, flags
-        ) = fields
-        pos += 62
+        for _ in range(count):
+            entry_start = pos
 
-        # Get filename
-        path_end = data.index(b'\x00', pos)
-        path = data[pos:path_end].decode()
-        pos = path_end + 1
+            # Read fixed-size header (62 bytes)
+            fields = struct.unpack("!LLLLLLLLLL20sH", data[pos:pos + 62])
+            (
+                ctime_s, ctime_n,
+                mtime_s, mtime_n,
+                dev, ino,
+                mode, uid, gid, size,
+                sha1, flags
+            ) = fields
+            pos += 62
 
-        # Align to 8-byte boundary
-        entry_len = pos - entry_start
-        padding = (8 - (entry_len % 8)) % 8
-        pos += padding
+            # Get filename
+            path_end = data.index(b'\x00', pos)
+            path = data[pos:path_end].decode()
+            pos = path_end + 1
 
-        entries.append({
-            'path' : path,
-            'raw': data[entry_start:pos],
-            'fields':{
-                'ctime_s' : ctime_s,
-                'ctime_n' : ctime_n,
-                'mtime_s' : mtime_s,
-                'mtime_n' : mtime_n,
-                'dev' : dev,
-                'ino' : ino,
-                'mode' : mode,
-        		'uid' : uid, 
-                'gid' : gid,
-                'size' : size,
-                'sha1' : sha1.hex(),
-                'flags' : flags
-			}
-        })
+            # Align to 8-byte boundary
+            entry_len = pos - entry_start
+            padding = (8 - (entry_len % 8)) % 8
+            pos += padding
 
-    return entries
+            entries.append({
+                'path': path,
+                'raw': data[entry_start:pos],
+                'fields': {
+                    'ctime_s': ctime_s,
+                    'ctime_n': ctime_n,
+                    'mtime_s': mtime_s,
+                    'mtime_n': mtime_n,
+                    'dev': dev,
+                    'ino': ino,
+                    'mode': mode,
+                    'uid': uid,
+                    'gid': gid,
+                    'size': size,
+                    'sha1': sha1.hex(),
+                    'flags': flags
+                }
+            })
+
+        return entries
+
+    except Exception as e:
+        print(f"fatal: {e}")
+        return None
