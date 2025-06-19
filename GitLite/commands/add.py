@@ -20,18 +20,23 @@ def add(args):
 	### Get valid files, discard .gitliteignore paths
 	all_files = get_all_files()
 	arg_files = []
+
 	if args.files:
 		path = gitlite_path.replace('.gitlite', '')
+		index_entries = read_index(index_path)
+		print('Before', len(index_entries))
+		print('\n')	
 		for files in args.files:
 			normalized_path = os.path.abspath(files).replace(path, '')
 			for f in all_files:
 				if f == normalized_path:
-					arg_files.append(f)
-					print(f)
+					for entry in index_entries:
+						if entry['path'] == f:
+							index_entries.remove(entry)
 		#Check what to delete
-		write_index(arg_files, index_path, 'ab')
+		write_index(all_files, index_path, index_entries)
 	else:
-		write_index(all_files, index_path, 'wb')
-	print(read_index(index_path))
+		write_index(all_files, index_path)
+	print(len(read_index(index_path)))
 	#for f in all_files:
 	#	print(f)

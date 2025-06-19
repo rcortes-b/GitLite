@@ -1,4 +1,4 @@
-import os, hashlib, struct
+import os, hashlib, struct, sys
 
 def create_index_entry(path):
     stat_result = os.stat(path)
@@ -40,34 +40,55 @@ def create_index_entry(path):
     
     return entry
 
-def write_index(paths, index_path, mode):
-    entries = [create_index_entry(p) for p in sorted(paths)]
+def write_index(paths, index_path, index_entries=None):
+    entries = []
+
+    if index_entries is not None:
+        for p in sorted(paths):
+            found = False
+            for entry in index_entries:
+                if entry['path'] == p:
+                    found = True
+                    break
+            if found is False:
+                entries.append(create_index_entry(p))
+            else:
+                entries.append(entry['raw'])
+        print('index entries', index_entries)
+    else:
+        entries = [create_index_entry(p) for p in sorted(paths)]
+
+    print('entries', len(entries))
+    print('\nend of entries\n')
 
     header = struct.pack("!4sLL", b"DIRC", 2, len(entries))
     body = b"".join(entries)
     data = header + body
 
+
     checksum = hashlib.sha1(data).digest()
-    with open(index_path, mode) as f:
+    with open(index_path, 'wb') as f:
         f.write(data + checksum)
 
-def read_index(index_path):
-    entries = []
-
-    with open(index_path, "rb") as f:
+def read_index(path):
+    with open(path, 'rb') as f:
         data = f.read()
 
-    # 1. Header
-    header = data[:12]
-    signature, version, num_entries = struct.unpack("!4sLL", header)
-    assert signature == b"DIRC", "Invalid index file"
-    assert version == 2, f"Unsupported index version: {version}"
+    entries = []
+    pos = 0
 
-    offset = 12
-    for _ in range(num_entries):
-        # 2. Read fixed-size entry header (62 bytes)
-        entry_head = data[offset:offset+62]
-        fields = struct.unpack("!LLLLLLLLLL20sH", entry_head)
+    # Read header
+    signature, version, count = struct.unpack('!4sLL', data[:12])
+    pos = 12
+
+    if signature != b'DIRC':
+        raise Exception("Not a valid index file")
+
+    for _ in range(count):
+        entry_start = pos
+
+        # Read fixed-size header (62 bytes)
+        fields = struct.unpack("!LLLLLLLLLL20sH", data[pos:pos+62])
         (
             ctime_s, ctime_n,
             mtime_s, mtime_n,
@@ -75,23 +96,35 @@ def read_index(index_path):
             mode, uid, gid, size,
             sha1, flags
         ) = fields
+        pos += 62
 
-        offset += 62
+        # Get filename
+        path_end = data.index(b'\x00', pos)
+        path = data[pos:path_end].decode()
+        pos = path_end + 1
 
-        # 3. Read path (null-terminated), then align to 8-byte boundary
-        path_end = data.index(b'\x00', offset)
-        path_bytes = data[offset:path_end]
-        path = path_bytes.decode()
-
-        entry_length = (62 + len(path_bytes) + 1)
-        padding = (8 - (entry_length % 8)) % 8
-        offset = path_end + 1 + padding
+        # Align to 8-byte boundary
+        entry_len = pos - entry_start
+        padding = (8 - (entry_len % 8)) % 8
+        pos += padding
 
         entries.append({
-            "path": path,
-            "sha1": sha1.hex(),
-            "mode": mode,
-            "size": size,
+            'path' : path,
+            'raw': data[entry_start:pos],
+            'fields':{
+                'ctime_s' : ctime_s,
+                'ctime_n' : ctime_n,
+                'mtime_s' : mtime_s,
+                'mtime_n' : mtime_n,
+                'dev' : dev,
+                'ino' : ino,
+                'mode' : mode,
+        		'uid' : uid, 
+                'gid' : gid,
+                'size' : size,
+                'sha1' : sha1.hex(),
+                'flags' : flags
+			}
         })
 
     return entries
