@@ -1,5 +1,5 @@
 import os, sys, zlib
-from commands.utils import find_gitlite_repo
+from commands.utils.utils import find_gitlite_repo
 
 class fileAttributes:
 	def __init__(self, type, size, body):

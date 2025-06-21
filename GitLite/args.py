@@ -3,7 +3,9 @@ from commands.init import init
 from commands.status import status
 from commands.hash_object import hash_object
 from commands.cat_file import cat_file
+from commands.write_tree import write_tree
 from commands.add import add
+from commands.commit import commit
 
 def load_arguments(parser):
 	parser.add_argument('-v', '--version', action='version', version='GitLite Version 0.0.1', help='check the current gitlite version')
@@ -33,11 +35,19 @@ def parse_args():
 	cat_file_command.add_argument('object_type', help='type of the object', nargs='?')
 	cat_file_command.add_argument('object', help='repository object which get information from')
 	cat_file_command.set_defaults(func=cat_file)
+	### WRITE-TREE
+	write_tree_command = commands.add_parser('write-tree', description='creates a tree object from the current index')
+	write_tree_command.set_defaults(func=write_tree)
 	### ADD
 	add_command = commands.add_parser('add')
 	add_command.add_argument('files', nargs='*', help='files to be added to the index')
 	add_command.add_argument('-A', '--all', action='store_true', help='add all the changes to the index')
 	add_command.set_defaults(func=add)
+	### COMMIT
+	commit_command = commands.add_parser('commit')
+	commit_command.add_argument('-m', '--mesage', required=True)
+	commit_command.add_argument('message')
+	commit_command.set_defaults(func=commit)
 	### STATUS
 	status_command = commands.add_parser('status')
 	status_command.set_defaults(func=status)

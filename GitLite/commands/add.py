@@ -1,5 +1,5 @@
 import os, sys
-from commands.utils import find_gitlite_repo, get_all_files
+from commands.utils.utils import find_gitlite_repo, get_all_files
 from commands.index import *
 
 def add(args):
@@ -24,7 +24,7 @@ def add(args):
 	if args.files:
 		path = gitlite_path.replace('.gitlite', '')
 		index_entries = read_index(index_path)
-		#print('Before', len(index_entries))
+
 		print('\n')	
 		for files in args.files:
 			normalized_path = os.path.abspath(files).replace(path, '')
@@ -37,10 +37,7 @@ def add(args):
 					arg_files.append(f)
 		if arg_files:
 			all_files = arg_files
-		#Check what to delete
 		write_index(all_files, index_path, index_entries)
 	else:
 		write_index(all_files, index_path)
-	print(len(read_index(index_path)))
-	#for f in all_files:
-	#	print(f)
+

@@ -1,9 +1,10 @@
-import os, hashlib, struct, sys
+import os, hashlib, struct
+from commands.utils.utils import find_gitlite_repo
 
 def create_index_entry(path):
-    stat_result = os.stat(path)
+    stat_result = os.stat(os.path.join(find_gitlite_repo(False), path))
 
-    with open(path, "rb") as f:
+    with open(os.path.join(find_gitlite_repo(False), path), "rb") as f:
         content = f.read()
 
     sha1 = hashlib.sha1(content).digest()
@@ -56,10 +57,8 @@ def write_index(paths, index_path, index_entries=None):
                 entries.append(entry['raw'])
         print('index entries', index_entries)
     else:
+        print(paths)
         entries = [create_index_entry(p) for p in sorted(paths)]
-
-    print('entries', len(entries))
-    print('\nend of entries\n')
 
     header = struct.pack("!4sLL", b"DIRC", 2, len(entries))
     body = b"".join(entries)
@@ -70,9 +69,7 @@ def write_index(paths, index_path, index_entries=None):
     with open(index_path, 'wb') as f:
         f.write(data + checksum)
 
-import struct
-
-def read_index(path):
+def read_index(path=os.path.join(find_gitlite_repo(), 'index')):
     try:
         with open(path, 'rb') as f:
             data = f.read()
