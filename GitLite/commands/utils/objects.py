@@ -18,24 +18,40 @@ def hash_blob(path, write):
 					fo.write(zlib.compress(full_data))
 	return sha1
 
-def hash_tree(abs_path=find_gitlite_repo(root=False)):
+def hash_tree(path=find_gitlite_repo(root=False), entries=None, dirname=None):
 	body = []
-	entries = read_index()
+	if entries is None:
+		entries = read_index()
 	for entry in entries:
 		print(entry['path'])
+	#print('PATH: ', path)
 	print('\n\n\n------------------\n\n\n')
-	for rootdir, dirname, filenames in os.walk(abs_path):
-		dir_name = rootdir.replace(abs_path + '/', '')
-		dir_name = '' if dir_name == abs_path else dir_name
-		if dir_name.find('.gitlite') > -1:
-			continue
-		print('dirname: ', dir_name)
-		#print('rootdir', rootdir)
-		for filename in filenames:
-			for entry in entries:
-				#print(entry['path'], os.path.join(dir_name, filename))
-				if os.path.join(dir_name, filename)  == entry['path']:
-					print('filename: ', entry['path'])
+	walk_tuple = list(os.walk(path))
+	for files in sorted(walk_tuple[0][2]):
+		for entry in entries:
+			if entry['path'] == files:
+				body.append({'mode': entry['fields']['mode'],
+				 			 'type': 'blob',
+				 			 'path': entry['path'],
+							 'sha1': entry['fields']['sha1']})
+	for dirs in sorted(walk_tuple[0][1]):
+		body_tree, bs = hash_tree(os.path.join(path, dirs), entries, dirs)
+		if body_tree is not None:
+			body.append(body_tree)
+	if body is None:
+		return None
+	body.sort(key=lambda x: x['path'])
+	tree_data = b""
+	for object in body:
+		tree_data += f"{object['mode']} {object['path']}".encode() + b'\x00' + bytes.fromhex(object['sha1'])
+	#for tree_files in sorted(body.):
+	#	print('Tree files: ', tree_files)
+	header = f"tree {len(tree_data)}\0".encode()
+	tree_object = header + tree_data
+	return ({'mode': '040000',
+		  	 'type': 'tree',
+			 'path': dirname,
+			 'sha1': hashlib.sha1(tree_object).hexdigest()}, hashlib.sha1(tree_object).hexdigest())
 
 		
 			
