@@ -22,10 +22,7 @@ def hash_tree(path=find_gitlite_repo(root=False), entries=None, dirname=None):
 	body = []
 	if entries is None:
 		entries = read_index()
-	for entry in entries:
-		print(entry['path'])
-	#print('PATH: ', path)
-	print('\n\n\n------------------\n\n\n')
+
 	walk_tuple = list(os.walk(path))
 	for files in sorted(walk_tuple[0][2]):
 		for entry in entries:
@@ -44,14 +41,12 @@ def hash_tree(path=find_gitlite_repo(root=False), entries=None, dirname=None):
 	tree_data = b""
 	for object in body:
 		tree_data += f"{object['mode']} {object['path']}".encode() + b'\x00' + bytes.fromhex(object['sha1'])
-	#for tree_files in sorted(body.):
-	#	print('Tree files: ', tree_files)
 	header = f"tree {len(tree_data)}\0".encode()
 	tree_object = header + tree_data
 	return ({'mode': '040000',
 		  	 'type': 'tree',
 			 'path': dirname,
-			 'sha1': hashlib.sha1(tree_object).hexdigest()}, hashlib.sha1(tree_object).hexdigest())
+			 'sha1': hashlib.sha1(tree_object).hexdigest()}, tree_object)
 
 		
 			
