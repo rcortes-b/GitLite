@@ -37,6 +37,7 @@ def parse_args():
 	cat_file_command.set_defaults(func=cat_file)
 	### WRITE-TREE
 	write_tree_command = commands.add_parser('write-tree', description='creates a tree object from the current index')
+	write_tree_command.add_argument('--prefix', required=False, type=str, help='specify the subdirectory which you will build the tree object')
 	write_tree_command.set_defaults(func=write_tree)
 	### ADD
 	add_command = commands.add_parser('add')

@@ -1,5 +1,5 @@
 import hashlib, os, zlib
-from commands.utils.utils import find_gitlite_repo
+from commands.utils.utils import find_gitlite_repo, get_ignored_files, dir_in_list
 from commands.index import read_index
 
 def hash_blob(path, write):
@@ -20,21 +20,27 @@ def hash_blob(path, write):
 
 def hash_tree(path=find_gitlite_repo(root=False), entries=None, dirname=None):
 	body = []
+	root_path = find_gitlite_repo(False)
 	if entries is None:
 		entries = read_index()
 
 	walk_tuple = list(os.walk(path))
 	for files in sorted(walk_tuple[0][2]):
+		files = os.path.join(os.path.abspath(path), files).replace(root_path + '/', '')
 		for entry in entries:
+			#print(files, entry['path'])
 			if entry['path'] == files:
 				body.append({'mode': entry['fields']['mode'],
 				 			 'type': 'blob',
 				 			 'path': entry['path'],
 							 'sha1': entry['fields']['sha1']})
+	ignored_dirs = get_ignored_files(root_path)
 	for dirs in sorted(walk_tuple[0][1]):
-		body_tree, bs = hash_tree(os.path.join(path, dirs), entries, dirs)
-		if body_tree is not None:
-			body.append(body_tree)
+		if dir_in_list(ignored_dirs, dirs) is False:
+				#print(dirs, ignored_dirs)
+				body_tree, bs = hash_tree(os.path.join(path, dirs), entries, dirs)
+				if body_tree is not None:
+					body.append(body_tree)
 	if body is None:
 		return None
 	body.sort(key=lambda x: x['path'])

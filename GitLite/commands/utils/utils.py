@@ -63,6 +63,9 @@ def path_ignored(file, ignored_list, path):
 				return True
 	return False
 			
-				
-
+def dir_in_list(list_object, value):
+	for obj in list_object:
+		if value == obj or (value + '/') == obj:
+			return True
+	return False
 			
