@@ -46,8 +46,7 @@ def parse_args():
 	add_command.set_defaults(func=add)
 	### COMMIT
 	commit_command = commands.add_parser('commit')
-	commit_command.add_argument('-m', '--mesage', required=True)
-	commit_command.add_argument('message')
+	commit_command.add_argument('-m', '--message', required=True, help='define the commit message' )
 	commit_command.set_defaults(func=commit)
 	### STATUS
 	status_command = commands.add_parser('status')

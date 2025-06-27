@@ -38,7 +38,7 @@ def hash_tree(path=find_gitlite_repo(root=False), entries=None, dirname=None):
 	for dirs in sorted(walk_tuple[0][1]):
 		if dir_in_list(ignored_dirs, dirs) is False:
 				#print(dirs, ignored_dirs)
-				body_tree, bs = hash_tree(os.path.join(path, dirs), entries, dirs)
+				body_tree, _ = hash_tree(os.path.join(path, dirs), entries, dirs)
 				if body_tree is not None:
 					body.append(body_tree)
 	if body is None:
