@@ -1,4 +1,40 @@
+import os, sys
+from commands.utils.utils import get_ignored_files, get_all_files, find_gitlite_repo, file_in_list
+from commands.utils.objects import hash_blob
+from commands.index import read_index
 
+# work tree not tracked by git and not in gitignore
+# index and work tree
+# index and commit
 
 def status():
-	print('Status thiss siuuu')
+	path = find_gitlite_repo(False)
+	index_entries = read_index(os.path.join(path, '.gitlite', 'index'))
+	path_index_entries = [entry['path'] for entry in index_entries]
+	ignored_files = get_ignored_files(path)
+	all_files = get_all_files(path)
+	print('On branch main')
+	print('Your branch is up to date with \'origin/main\'.\n')
+	print('Changes to be committed:')
+	#index and commit
+	
+	
+	print('\nChanges not staged for commit:')
+	#index and work tree
+	for entry in index_entries:
+		if file_in_list(all_files, entry['path']) is True:
+			if entry['fields']['sha1'] != hash_blob(os.path.abspath(entry['path']), False):
+				print('\t', f"\033[91m modified:\t{entry['path']}\033[0m")
+		else:
+			print('\t', f"\033[91m deleted:\t{entry['path']}\033[0m")
+	
+	
+	print('\nUntracked files:')
+	#print(index_entries)
+	for file in all_files:
+		if file_in_list(path_index_entries, file) is False:
+			print('\t', f"\033[91m{file}")
+		
+			
+	#print('\n\n', all_files)
+	#work tree and not tracked by git and not gitignore

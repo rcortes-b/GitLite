@@ -24,9 +24,8 @@ def find_gitlite_repo(root=True):
 		print('{e}')
 		sys.exit(1)
 
-def get_all_files():
+def get_all_files(root_path=find_gitlite_repo(False)):
 	all_files = []
-	root_path = find_gitlite_repo(False)
 	ignored_files = get_ignored_files(root_path)
 	for rootdir, dirname, filenames in os.walk(root_path):
 		for filename in filenames:
@@ -66,6 +65,12 @@ def path_ignored(file, ignored_list, path):
 def dir_in_list(list_object, value):
 	for obj in list_object:
 		if value == obj or (value + '/') == obj:
+			return True
+	return False
+
+def file_in_list(list_object, value):
+	for file in list_object:
+		if file == value:
 			return True
 	return False
 			
