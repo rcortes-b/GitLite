@@ -49,6 +49,10 @@ def cat_file(args):
 				if fileObject.type != 'blob':
 					raise Exception('Requested type with object type don\'t match')
 				print(fileObject.body.decode())
+			else:
+				if fileObject.type != 'commit':
+					raise Exception('Requested type with object type don\'t match')
+				print(fileObject.body.decode())
 		else:
 			if not args.type and not args.size and not args.print:
 				raise Exception('You have to specify either a type or an option.')
@@ -62,7 +66,7 @@ def cat_file(args):
 				elif fileObject.type == 'blob':
 					print(fileObject.body.decode())
 				else:
-					print('This will be a commit')
+					print(fileObject.body.decode())
 	except Exception as e:
 		print(f'Error: {e}')
 		sys.exit(1)
