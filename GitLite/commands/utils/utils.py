@@ -73,4 +73,29 @@ def file_in_list(list_object, value):
 		if file == value:
 			return True
 	return False
-			
+
+def check_author_syntax(split):
+	if len(split) != 3:
+		return False
+	if split[0] != 'name' and split[0] != 'email':
+		return False
+	elif split[1] != '=':
+		return False
+	return True
+		
+
+def get_author(path=os.path.join(find_gitlite_repo(False), '.gitconfig')):
+	with open(path, 'r') as f:
+		data = [line[2:] for line in f]
+	author = ''
+	email = ''
+	for line in data:
+		if line.find('name') > -1 or line.find('email') > -1:
+			split = line.split()
+			if check_author_syntax(split) is False:
+				return None, None
+			if line.find('name') > -1:
+				author = split[2]
+			elif line.find('email') > -1:
+				email = split[2]
+	return author, email

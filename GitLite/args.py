@@ -18,7 +18,9 @@ def parse_args():
 	commands = parser.add_subparsers(dest="commands", required=True)
 	### INIT
 	init_command = commands.add_parser('init')
-	init_command.add_argument('repo_name', nargs='?', type=str, help='Name of the repository to be created')
+	init_command.add_argument('repo_name', nargs='?', type=str, help='name of the repository to be created')
+	init_command.add_argument('--author', type=str, help='name of the repository owner')
+	init_command.add_argument('--email', type=str, help='email adress of the repository owner')
 	init_command.set_defaults(func=init)
 	### HASH-OBJECT
 	hash_object_command = commands.add_parser('hash-object')

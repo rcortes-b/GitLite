@@ -3,4 +3,5 @@ __pycache__/
 GitLite/development
 GitLite/.gitlite
 GitLite/.gitliteignore
+GitLite/.gitconfig
 decode.py

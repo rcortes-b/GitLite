@@ -1,5 +1,5 @@
 import os, sys, time, zlib, hashlib
-from commands.utils.utils import find_gitlite_repo, get_all_files
+from commands.utils.utils import find_gitlite_repo, get_all_files, get_author
 from commands.utils.objects import hash_tree
 from commands.index import *
 
@@ -13,7 +13,11 @@ from commands.index import *
 
 def commit(args):
 	path = find_gitlite_repo(False)
-	author = f"default <default@mail.com> {int(time.time())} {time.strftime('%z')}"
+	a, e = get_author()
+	if a is None and e is None:
+		a = 'default'
+		e = 'default@defaultmail.com'
+	author = f"{a} {e} {int(time.time())} {time.strftime('%z')}"
 	tree_data, _ = hash_tree(path)
 	path = os.path.join(path, '.gitlite/refs/heads/main')
 	prev_commit_sha1 = None
@@ -22,7 +26,8 @@ def commit(args):
 		prev_commit_sha1 = '0000000000000000000000000000000000000000'
 	else:
 		with open(path, 'r') as f:
-			prev_commit_sha1 = f.read()
+			prev_commit_sha1 = f.read().replace('\n', '')
+
 	commit_content = []
 	commit_content.append(f"tree {tree_data['sha1']}")
 	commit_content.append(f'parent {prev_commit_sha1}')

@@ -25,7 +25,6 @@ def add(args):
 		path = gitlite_path.replace('.gitlite', '')
 		index_entries = read_index(index_path)
 
-		print('\n')	
 		for files in args.files:
 			normalized_path = os.path.abspath(files).replace(path, '')
 			for f in all_files:
