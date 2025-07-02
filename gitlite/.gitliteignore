@@ -1,0 +1,6 @@
+__pycache__/
+.venv
+GitLite/development
+GitLite/.gitlite
+GitLite/.gitliteignore
+decode.py
