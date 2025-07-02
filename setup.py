@@ -10,7 +10,7 @@ setup(
             "gitlite=gitlite.main:main",  # points to main() function
         ],
     },
-    author="Your Name",
+    author="rcortes-b",
     description="A lightweight Git-like tool written in Python.",
     classifiers=[
         "Programming Language :: Python :: 3",

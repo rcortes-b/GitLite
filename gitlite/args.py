@@ -1,11 +1,11 @@
-import argparse, sys
-from commands.init import init
-from commands.status import status
-from commands.hash_object import hash_object
-from commands.cat_file import cat_file
-from commands.write_tree import write_tree
-from commands.add import add
-from commands.commit import commit
+import argparse
+from .commands.init import init
+from .commands.status import status
+from .commands.hash_object import hash_object
+from .commands.cat_file import cat_file
+from .commands.write_tree import write_tree
+from .commands.add import add
+from .commands.commit import commit
 
 def load_arguments(parser):
 	parser.add_argument('-v', '--version', action='version', version='GitLite Version 0.0.1', help='check the current gitlite version')

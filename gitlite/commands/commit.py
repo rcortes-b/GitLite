@@ -1,7 +1,7 @@
-import os, sys, time, zlib, hashlib
-from commands.utils.utils import find_gitlite_repo, get_all_files, get_author
-from commands.utils.objects import hash_tree
-from commands.index import *
+import os, time, zlib, hashlib, sys
+from .utils.utils import find_gitlite_repo, get_all_files, get_author
+from .utils.objects import hash_tree
+from .index import *
 
 #tree 1f57a06c9ec667811fbc952bbc7bd55140b03e48
 #parent 2e77efbee42aa7279b06f7d2d29f023403c304d5
@@ -13,12 +13,15 @@ from commands.index import *
 
 def commit(args):
 	path = find_gitlite_repo(False)
+	if path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
 	a, e = get_author()
 	if a is None and e is None:
 		a = 'default'
 		e = 'default@defaultmail.com'
 	author = f"{a} {e} {int(time.time())} {time.strftime('%z')}"
-	tree_data, _ = hash_tree(path)
+	tree_data, _ = hash_tree()
 	path = os.path.join(path, '.gitlite/refs/heads/main')
 	prev_commit_sha1 = None
 	if not os.path.exists(path):
@@ -44,7 +47,11 @@ def commit(args):
 
 	with open(path, 'w') as f:
 		f.write(f'{sha1}\n')
-	path = os.path.join(find_gitlite_repo(), 'objects', sha1[:2], sha1[2:])
+	path = find_gitlite_repo()
+	if path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
+	path = os.path.join(path, 'objects', sha1[:2], sha1[2:])
 	if not os.path.exists(path):
 		os.makedirs(os.path.dirname(path), exist_ok=True)
 	with open(path, 'wb') as f:

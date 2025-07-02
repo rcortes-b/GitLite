@@ -1,5 +1,5 @@
 import os, sys, zlib
-from commands.utils.utils import find_gitlite_repo
+from .utils.utils import find_gitlite_repo
 
 class fileAttributes:
 	def __init__(self, type, size, body):
@@ -24,7 +24,11 @@ def parse_tree(data):
 		print(f"{mode} {obj_type} {sha} {path}")
 
 def read_file(object_id):
-	path = os.path.join(find_gitlite_repo(), 'objects', object_id[:2], object_id[2:])
+	path = find_gitlite_repo()
+	if path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
+	path = os.path.join(path, 'objects', object_id[:2], object_id[2:])
 	with open(path, 'rb') as f:
 		raw = zlib.decompress(f.read())
 

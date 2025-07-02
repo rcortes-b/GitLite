@@ -1,4 +1,5 @@
 import os
+
 def init(args):
 	prog_name = ".gitlite"
 	try:

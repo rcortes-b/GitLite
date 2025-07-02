@@ -1,7 +1,7 @@
 import os, sys
-from commands.utils.utils import get_ignored_files, get_all_files, find_gitlite_repo, file_in_list
-from commands.utils.objects import hash_blob
-from commands.index import read_index
+from .utils.utils import get_ignored_files, get_all_files, find_gitlite_repo, file_in_list
+from .utils.objects import hash_blob
+from .index import read_index
 
 # work tree not tracked by git and not in gitignore
 # index and work tree
@@ -9,10 +9,13 @@ from commands.index import read_index
 
 def status():
 	path = find_gitlite_repo(False)
-	index_entries = read_index(os.path.join(path, '.gitlite', 'index'))
+	if path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
+	index_entries = read_index()
 	path_index_entries = [entry['path'] for entry in index_entries]
-	ignored_files = get_ignored_files(path)
-	all_files = get_all_files(path)
+	ignored_files = get_ignored_files()
+	all_files = get_all_files()
 	print('On branch main')
 	print('Your branch is up to date with \'origin/main\'.\n')
 	print('Changes to be committed:')

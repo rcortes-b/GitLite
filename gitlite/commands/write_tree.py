@@ -1,6 +1,6 @@
-from commands.utils.objects import hash_tree
-from commands.utils.utils import find_gitlite_repo
-import hashlib, os, zlib
+import os, zlib, sys
+from .utils.objects import hash_tree
+from .utils.utils import find_gitlite_repo
 def write_tree(args=None):
 	path=None
 	try:
@@ -10,8 +10,15 @@ def write_tree(args=None):
 			path = os.path.join(os.path.abspath('.'), args.prefix)
 		else:
 			path = find_gitlite_repo(False)
-		data, tree_data = hash_tree(path)
-		path = os.path.join(find_gitlite_repo(False), '.gitlite', 'objects', data['sha1'][:2], data['sha1'][2:])
+			if path is None:
+				print('fatal: not gitlite repository found')
+				sys.exit(1)
+		data, tree_data = hash_tree()
+		path = find_gitlite_repo(False)
+		if path is None:
+			print('fatal: not gitlite repository found')
+			sys.exit(1)
+		path = os.path.join(path, '.gitlite', 'objects', data['sha1'][:2], data['sha1'][2:])
 		if not os.path.exists(path):
 			#print(os.path.dirname(path))
 			os.makedirs(os.path.dirname(path), exist_ok=True)

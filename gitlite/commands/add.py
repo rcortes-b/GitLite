@@ -1,10 +1,13 @@
 import os, sys
-from commands.utils.utils import find_gitlite_repo, get_all_files
-from commands.index import *
+from .utils.utils import find_gitlite_repo, get_all_files
+from .index import *
 
 def add(args):
 	### Index file creation
 	gitlite_path = find_gitlite_repo()
+	if gitlite_path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
 	index_path = os.path.join(gitlite_path, 'index')
 	if not os.path.exists(index_path):
 		f = open(index_path, 'w')
@@ -23,7 +26,7 @@ def add(args):
 
 	if args.files:
 		path = gitlite_path.replace('.gitlite', '')
-		index_entries = read_index(index_path)
+		index_entries = read_index()
 
 		for files in args.files:
 			normalized_path = os.path.abspath(files).replace(path, '')

@@ -1,5 +1,5 @@
-from commands.utils.utils import find_gitlite_repo
-from commands.utils.objects import hash_blob
+from .utils.utils import find_gitlite_repo
+from .utils.objects import hash_blob
 
 def hash_object(args):
 

@@ -1,6 +1,6 @@
 import sys, os
-from args import parse_args
-from commands.utils.utils import *
+from .args import parse_args
+from .commands.utils.utils import usage_msg
 
 def main():
 	if len(sys.argv) < 2:

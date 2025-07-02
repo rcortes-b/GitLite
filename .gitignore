@@ -5,3 +5,4 @@ GitLite/.gitlite
 GitLite/.gitliteignore
 GitLite/.gitconfig
 decode.py
+gitlite.egg-info/

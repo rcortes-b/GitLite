@@ -1,10 +1,14 @@
-import os, hashlib, struct
-from commands.utils.utils import find_gitlite_repo
+import os, hashlib, struct, sys
+from .utils.utils import find_gitlite_repo
 
 def create_index_entry(path):
-	stat_result = os.stat(os.path.join(find_gitlite_repo(False), path))
+	gitlite_path = find_gitlite_repo(False)
+	if gitlite_path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
+	stat_result = os.stat(os.path.join(gitlite_path, path))
 
-	with open(os.path.join(find_gitlite_repo(False), path), "rb") as f:
+	with open(os.path.join(gitlite_path, path), "rb") as f:
 		content = f.read()
 	header = '{} {}'.format('blob', len(content)).encode()
 	full_data = header + b'\x00' + content
@@ -70,7 +74,12 @@ def write_index(paths, index_path, index_entries=None):
 	with open(index_path, 'wb') as f:
 		f.write(data + checksum)
 
-def read_index(path=os.path.join(find_gitlite_repo(), 'index')):
+def read_index():
+	path = find_gitlite_repo()
+	if path is None:
+		print('fatal: not gitlite repository found')
+		sys.exit(1)
+	path = os.path.join(path, 'index')
 	try:
 		with open(path, 'rb') as f:
 			data = f.read()
