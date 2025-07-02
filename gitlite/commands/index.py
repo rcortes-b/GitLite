@@ -80,6 +80,8 @@ def read_index():
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	path = os.path.join(path, 'index')
+	if not os.path.exists(path):
+		return None
 	try:
 		with open(path, 'rb') as f:
 			data = f.read()

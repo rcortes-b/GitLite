@@ -3,6 +3,6 @@ __pycache__/
 GitLite/development
 GitLite/.gitlite
 GitLite/.gitliteignore
-GitLite/.gitconfig
+GitLite/.gitliteconfig
 decode.py
 gitlite.egg-info/

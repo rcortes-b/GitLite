@@ -37,6 +37,8 @@ def get_all_files():
 			f = os.path.join(rootdir.replace(root_path, ''), filename).replace('/', '', 1)
 			if path_ignored(f, ignored_files, root_path) is False:
 				all_files.append(f)
+	if len(all_files) == 0:
+		return None
 	return all_files
 
 def get_ignored_files():
@@ -45,12 +47,13 @@ def get_ignored_files():
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	if not os.path.exists(os.path.join(path, '.gitliteignore')):
-		return
+		return [".gitlite/", ".gitliteconfig"]
 	lines = []
 	with open(os.path.join(path, '.gitliteignore'), 'r') as f:
 		for line in f:
 			lines.append(line.strip())
 	lines.append(".gitlite/")
+	lines.append(".gitliteconfig")
 	return lines
 
 def path_ignored(file, ignored_list, path):
@@ -78,6 +81,8 @@ def dir_in_list(list_object, value):
 	return False
 
 def file_in_list(list_object, value):
+	if list_object is None:
+		return False
 	for file in list_object:
 		if file == value:
 			return True
@@ -98,7 +103,7 @@ def get_author():
 	if path is None:
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
-	path = os.path.join(path, '.gitconfig')
+	path = os.path.join(path, '.gitliteconfig')
 	with open(path, 'r') as f:
 		data = [line[2:] for line in f]
 	author = ''
@@ -113,3 +118,8 @@ def get_author():
 			elif line.find('email') > -1:
 				email = split[2]
 	return author, email
+
+def status_default_msg():
+	print('On branch master\n')
+	print('No commits yet\n')
+	print('nothing to commit (create/copy files and use "gitlite add" to track)')
