@@ -104,6 +104,9 @@ def get_author():
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	path = os.path.join(path, '.gitliteconfig')
+	if not os.path.exists(path):
+		print('fatal: not gitliteconfig file found')
+		sys.exit(1)
 	with open(path, 'r') as f:
 		data = [line[2:] for line in f]
 	author = ''

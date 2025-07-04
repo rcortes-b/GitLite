@@ -1,4 +1,4 @@
-import os, hashlib, struct, sys
+import os, hashlib, struct, sys, zlib
 from .utils.utils import find_gitlite_repo
 
 def create_index_entry(path):
@@ -12,8 +12,13 @@ def create_index_entry(path):
 		content = f.read()
 	header = '{} {}'.format('blob', len(content)).encode()
 	full_data = header + b'\x00' + content
+	sha1 = hashlib.sha1(full_data).hexdigest()
+	object_path = os.path.join(gitlite_path, '.gitlite', 'objects', sha1[:2], sha1[2:])
+	if not os.path.exists(object_path):
+		os.makedirs(os.path.dirname(object_path), exist_ok=True)
+		with open(object_path, 'wb') as fo:
+			fo.write(zlib.compress(full_data))
 	sha1 = hashlib.sha1(full_data).digest()
-
 	ctime_s = int(stat_result.st_ctime)
 	ctime_n = int((stat_result.st_ctime - ctime_s) * 1e9)
 	mtime_s = int(stat_result.st_mtime)
@@ -60,11 +65,10 @@ def write_index(paths, index_path, index_entries=None):
 				entries.append(create_index_entry(p))
 			else:
 				entries.append(entry['raw'])
-		print('index entries', index_entries)
+		#print('index entries', index_entries)
 	else:
-		print(paths)
 		entries = [create_index_entry(p) for p in sorted(paths)]
-
+	print(paths)
 	header = struct.pack("!4sLL", b"DIRC", 2, len(entries))
 	body = b"".join(entries)
 	data = header + body

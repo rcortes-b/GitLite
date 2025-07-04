@@ -9,6 +9,7 @@ class fileAttributes:
 
 def parse_tree(data):
 	pos = 0
+	lines = []
 	while pos < len(data):
 		space = data.index(b' ', pos)
 		mode = data[pos:space].decode()
@@ -22,6 +23,8 @@ def parse_tree(data):
 		pos += 20
 		obj_type = 'tree' if mode == '040000' else 'blob'
 		print(f"{mode} {obj_type} {sha} {path}")
+		lines.append(f"{mode} {obj_type} {sha} {path}")
+	return lines
 
 def read_file(object_id):
 	path = find_gitlite_repo()
@@ -52,7 +55,7 @@ def cat_file(args):
 			elif args.object_type == 'blob':
 				if fileObject.type != 'blob':
 					raise Exception('Requested type with object type don\'t match')
-				print(fileObject.body.decode())
+				print(fileObject.body.decode(), end='')
 			else:
 				if fileObject.type != 'commit':
 					raise Exception('Requested type with object type don\'t match')
@@ -68,7 +71,7 @@ def cat_file(args):
 				if fileObject.type == 'tree':
 					parse_tree(fileObject.body)
 				elif fileObject.type == 'blob':
-					print(fileObject.body.decode())
+					print(fileObject.body.decode(), end='')
 				else:
 					print(fileObject.body.decode())
 	except Exception as e:

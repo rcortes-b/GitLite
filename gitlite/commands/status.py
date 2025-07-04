@@ -1,6 +1,6 @@
 import os, sys
 from .utils.utils import get_ignored_files, get_all_files, find_gitlite_repo, file_in_list, status_default_msg
-from .utils.objects import hash_blob
+from .utils.objects import hash_blob, get_commit_files
 from .index import read_index
 
 # work tree not tracked by git and not in gitignore
@@ -26,7 +26,7 @@ def status():
 		print('Your branch is up to date with \'origin/main\'.\n')
 		print('Changes to be committed:')
 		#index and commit
-		
+		get_commit_files()
 		
 		print('\nChanges not staged for commit:')
 		#index and work tree

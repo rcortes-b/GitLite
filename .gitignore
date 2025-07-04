@@ -1,8 +1,8 @@
 __pycache__/
 .venv
-GitLite/development
-GitLite/.gitlite
-GitLite/.gitliteignore
-GitLite/.gitliteconfig
+gitlite/development
+gitlite/.gitlite
+gitlite/.gitliteignore
+gitlite/.gitliteconfig
 decode.py
 gitlite.egg-info/

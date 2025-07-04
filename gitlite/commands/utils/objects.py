@@ -1,6 +1,7 @@
 import hashlib, os, zlib, sys
 from .utils import find_gitlite_repo, get_ignored_files, dir_in_list
 from ..index import read_index
+from ..cat_file import read_file, parse_tree
 
 def hash_blob(path, write):
 	with open(path, 'rb') as f:
@@ -21,7 +22,7 @@ def hash_blob(path, write):
 			sys.exit(1)
 	return sha1
 
-def hash_tree(path=None, entries=None, dirname=None):
+def hash_tree(path=None, entries=None, dirname=''):
 	if path is None:
 		path = find_gitlite_repo(root=False)
 		if path is None:
@@ -33,9 +34,8 @@ def hash_tree(path=None, entries=None, dirname=None):
 
 	walk_tuple = list(os.walk(path))
 	for files in sorted(walk_tuple[0][2]):
-		files = os.path.join(os.path.abspath(path), files).replace(path + '/', '')
+		files = os.path.join(dirname, files)
 		for entry in entries:
-			#print(files, entry['path'])
 			if entry['path'] == files:
 				body.append({'mode': entry['fields']['mode'],
 				 			 'type': 'blob',
@@ -44,8 +44,7 @@ def hash_tree(path=None, entries=None, dirname=None):
 	ignored_dirs = get_ignored_files()
 	for dirs in sorted(walk_tuple[0][1]):
 		if dir_in_list(ignored_dirs, dirs) is False:
-				#print(dirs, ignored_dirs)
-				body_tree, _ = hash_tree(os.path.join(path, dirs), entries, dirs)
+				body_tree, _ = hash_tree(os.path.join(path, dirs), entries, os.path.join(dirname, dirs)) # os.path.join(dirname, dirs)
 				if body_tree is not None:
 					body.append(body_tree)
 	if body is None:
@@ -56,10 +55,25 @@ def hash_tree(path=None, entries=None, dirname=None):
 		tree_data += f"{object['mode']} {object['path']}".encode() + b'\x00' + bytes.fromhex(object['sha1'])
 	header = f"tree {len(tree_data)}\0".encode()
 	tree_object = header + tree_data
+	sha1 = hashlib.sha1(tree_object).hexdigest()
+	path = os.path.join(find_gitlite_repo(False), '.gitlite', 'objects', sha1[:2], sha1[2:])
+	if not os.path.exists(path):
+		os.makedirs(os.path.dirname(path), exist_ok=True)
+		with open(path, 'wb') as fo:
+			fo.write(zlib.compress(tree_object))
 	return ({'mode': '040000',
 		  	 'type': 'tree',
 			 'path': dirname,
-			 'sha1': hashlib.sha1(tree_object).hexdigest()}, tree_object)
+			 'sha1': sha1}, tree_object)
 
-		
-			
+def get_commit_files():
+	print('GET COMMIT FILES START')
+	path = find_gitlite_repo()
+	with open(os.path.join(path, 'refs/heads/main'), 'r') as f:
+		sha = f.read().replace('\n', '')
+	commit_body = read_file(sha).body.decode()
+	tree_sha = commit_body[5:45]
+	print(tree_sha)
+	parent_tree = parse_tree(read_file(tree_sha).body)
+	print(parent_tree)
+	print('GET COMMIT FILES END')

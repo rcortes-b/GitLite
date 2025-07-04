@@ -1,6 +1,7 @@
 import os, zlib, sys
 from .utils.objects import hash_tree
 from .utils.utils import find_gitlite_repo
+
 def write_tree(args=None):
 	path=None
 	try:
@@ -20,7 +21,6 @@ def write_tree(args=None):
 			sys.exit(1)
 		path = os.path.join(path, '.gitlite', 'objects', data['sha1'][:2], data['sha1'][2:])
 		if not os.path.exists(path):
-			#print(os.path.dirname(path))
 			os.makedirs(os.path.dirname(path), exist_ok=True)
 		with open(path, 'wb') as fo:
 			fo.write(zlib.compress(tree_data))
