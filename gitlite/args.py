@@ -6,6 +6,7 @@ from .commands.cat_file import cat_file
 from .commands.write_tree import write_tree
 from .commands.add import add
 from .commands.commit import commit
+from .commands.ls_files import ls_files
 
 def load_arguments(parser):
 	parser.add_argument('-v', '--version', action='version', version='GitLite Version 0.0.1', help='check the current gitlite version')
@@ -53,4 +54,14 @@ def parse_args():
 	### STATUS
 	status_command = commands.add_parser('status')
 	status_command.set_defaults(func=status)
+	### LS-FILES
+	ls_files_command = commands.add_parser('ls-files', help='show all tracked files in gitlite index')
+	ls_files_group = ls_files_command.add_mutually_exclusive_group(required=False)
+	ls_files_group.add_argument('-c', '--cached', action='store_true', help='show all files cached in gitlite index, i.e. all tracked files')
+	ls_files_group.add_argument('-s', '--stage', action='store_true', help='show staged contents; mode bits, object name and stage number in the output.')
+	ls_files_group.add_argument('-d', '--deleted', action='store_true', help='show files with an unstaged deletion')
+	ls_files_group.add_argument('-m', '--modified', action='store_true', help='show files with an unstaged modification')
+	ls_files_group.add_argument('-o', '--others', action='store_true', help='show other (i.e. untracked) files in the output')
+	ls_files_command.set_defaults(func=ls_files)
+
 	return parser.parse_args()

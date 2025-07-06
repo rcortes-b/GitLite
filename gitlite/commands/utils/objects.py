@@ -1,5 +1,5 @@
 import hashlib, os, zlib, sys
-from .utils import find_gitlite_repo, get_ignored_files, dir_in_list
+from .utils import find_gitlite_repo, get_ignored_files, dir_in_list, get_all_files
 from ..index import read_index
 from ..cat_file import read_file, parse_tree
 
@@ -72,8 +72,13 @@ def get_commit_files():
 	if not os.path.exists(path):
 		entries = read_index()
 		index_files = []
+		all_files = get_all_files()
+		if all_files is None:
+			return None
 		for entry in entries:
-			print('\t', f"\033[92m new file:\t{entry['path']}\033[0m")
+			for file in all_files:
+				if entry['path'] == file:
+					('\t', f"\033[92m new file:\t{entry['path']}\033[0m")
 		return
 
 	with open(path, 'r') as f:

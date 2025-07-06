@@ -7,7 +7,7 @@ from .index import read_index
 # index and work tree
 # index and commit
 
-def status():
+def status(args):
 	path = find_gitlite_repo(False)
 	if path is None:
 		print('fatal: not gitlite repository found')
@@ -22,25 +22,26 @@ def status():
 		status_default_msg()
 		sys.exit(0)
 	if index_entries is not None:
-		print('On branch main')
+		print('On branch master')
 		print('Your branch is up to date with \'origin/main\'.\n')
 		print('Changes to be committed:')
 		#index and commit
 		commit_files = get_commit_files()
-		for index in index_entries:
-			found = False
-			for commit in commit_files:
-				if index['path'] == commit['path']:
-					if index['fields']['sha1'] != commit['sha']:
-						print('\t', f"\033[92m modified:\t{index['path']}\033[0m")
-					commit_files.remove(commit)
-					found = True
-					break
-			if found is False:
-				print('\t', f"\033[92m new file:\t{index['path']}\033[0m")
-		if len(commit_files) > 0:
-			for removed_file in commit_files:
-				print('\t', f"\033[91m removed:\t{removed_file['path']}\033[0m")
+		if commit_files is not None:
+			for index in index_entries:
+				found = False
+				for commit in commit_files:
+					if index['path'] == commit['path']:
+						if index['fields']['sha1'] != commit['sha']:
+							print('\t', f"\033[92m modified:\t{index['path']}\033[0m")
+						commit_files.remove(commit)
+						found = True
+						break
+				if found is False:
+					print('\t', f"\033[92m new file:\t{index['path']}\033[0m")
+			if len(commit_files) > 0:
+				for removed_file in commit_files:
+					print('\t', f"\033[91m removed:\t{removed_file['path']}\033[0m")
 		print('\nChanges not staged for commit:')
 		#index and work tree
 		for entry in index_entries:

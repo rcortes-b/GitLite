@@ -4,6 +4,10 @@ from .index import *
 
 def add(args):
 	### Index file creation
+	if not args.files and args.all is False:
+		print("error: no files specified for 'add'")
+		print("usage: gitlite add <file> [...] or gitlite add --all/-A")
+		sys.exit(1)
 	gitlite_path = find_gitlite_repo()
 	if gitlite_path is None:
 		print('fatal: not gitlite repository found')
@@ -12,14 +16,7 @@ def add(args):
 	if not os.path.exists(index_path):
 		f = open(index_path, 'w')
 		f.close()
-	### Check if every file is valid
-	try:
-		for files in args.files:
-			if not os.path.exists(os.path.abspath(files)):
-				raise Exception(files)
-	except Exception as e:
-		print(f"fatal: pathspec '{e}' did not match any files")
-		sys.exit(1)
+
 	### Get valid files, discard .gitliteignore paths
 	all_files = get_all_files()
 	arg_files = []
@@ -34,6 +31,7 @@ def add(args):
 				if f == normalized_path and index_entries is not None:
 					for entry in index_entries:
 						if entry['path'] == f:
+							print('f', f)
 							index_entries.remove(entry)
 				elif f == normalized_path and index_entries is None:
 					arg_files.append(f)

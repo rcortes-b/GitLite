@@ -7,8 +7,7 @@ def main():
 		usage_msg()
 		sys.exit(1)
 	args = parse_args()
-	args.func(args) if len(sys.argv) > 2 else args.func()
-
+	args.func(args)
 
 if __name__ == "__main__":
 	main()
