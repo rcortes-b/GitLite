@@ -22,8 +22,9 @@ def parse_tree(data):
 		sha = data[pos:pos+20].hex()
 		pos += 20
 		obj_type = 'tree' if mode == '040000' else 'blob'
-		print(f"{mode} {obj_type} {sha} {path}")
-		lines.append(f"{mode} {obj_type} {sha} {path}")
+		lines.append({'obj_type': obj_type,
+					  'sha': sha,
+					  'path': path})
 	return lines
 
 def read_file(object_id):

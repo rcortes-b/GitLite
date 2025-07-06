@@ -67,13 +67,25 @@ def hash_tree(path=None, entries=None, dirname=''):
 			 'sha1': sha1}, tree_object)
 
 def get_commit_files():
-	print('GET COMMIT FILES START')
-	path = find_gitlite_repo()
-	with open(os.path.join(path, 'refs/heads/main'), 'r') as f:
+	path = os.path.join(find_gitlite_repo(), 'refs/heads/main')
+
+	if not os.path.exists(path):
+		entries = read_index()
+		index_files = []
+		for entry in entries:
+			print('\t', f"\033[92m new file:\t{entry['path']}\033[0m")
+		return
+
+	with open(path, 'r') as f:
 		sha = f.read().replace('\n', '')
 	commit_body = read_file(sha).body.decode()
 	tree_sha = commit_body[5:45]
-	print(tree_sha)
 	parent_tree = parse_tree(read_file(tree_sha).body)
-	print(parent_tree)
-	print('GET COMMIT FILES END')
+
+	for files in parent_tree:
+		if files['obj_type'] == 'tree':
+			sub_tree = parse_tree(read_file(files['sha']).body)
+			parent_tree.remove(files)
+			for sub_files in sub_tree:
+				parent_tree.append(sub_files)
+	return parent_tree

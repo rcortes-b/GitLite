@@ -145,7 +145,6 @@ def read_index():
 					'flags': flags
 				}
 			})
-
 		return entries
 
 	except Exception as e:

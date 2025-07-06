@@ -26,13 +26,26 @@ def status():
 		print('Your branch is up to date with \'origin/main\'.\n')
 		print('Changes to be committed:')
 		#index and commit
-		get_commit_files()
-		
+		commit_files = get_commit_files()
+		for index in index_entries:
+			found = False
+			for commit in commit_files:
+				if index['path'] == commit['path']:
+					if index['fields']['sha1'] != commit['sha']:
+						print('\t', f"\033[92m modified:\t{index['path']}\033[0m")
+					commit_files.remove(commit)
+					found = True
+					break
+			if found is False:
+				print('\t', f"\033[92m new file:\t{index['path']}\033[0m")
+		if len(commit_files) > 0:
+			for removed_file in commit_files:
+				print('\t', f"\033[91m removed:\t{removed_file['path']}\033[0m")
 		print('\nChanges not staged for commit:')
 		#index and work tree
 		for entry in index_entries:
 			if file_in_list(all_files, entry['path']) is True:
-				if entry['fields']['sha1'] != hash_blob(os.path.abspath(entry['path']), False):
+				if entry['fields']['sha1'] != hash_blob(os.path.join(path, entry['path']), False):
 					print('\t', f"\033[91m modified:\t{entry['path']}\033[0m")
 			else:
 				print('\t', f"\033[91m deleted:\t{entry['path']}\033[0m")
