@@ -22,7 +22,7 @@ def hash_blob(path, write):
 			sys.exit(1)
 	return sha1
 
-def hash_tree(path=None, entries=None, dirname=''):
+def hash_tree(path=None, entries=None, dirname='', dir=''):
 	if path is None:
 		path = find_gitlite_repo(root=False)
 		if path is None:
@@ -31,24 +31,26 @@ def hash_tree(path=None, entries=None, dirname=''):
 	body = []
 	if entries is None:
 		entries = read_index()
-
 	walk_tuple = list(os.walk(path))
 	for files in sorted(walk_tuple[0][2]):
 		files = os.path.join(dirname, files)
-		for entry in entries:
-			if entry['path'] == files:
-				body.append({'mode': entry['fields']['mode'],
-				 			 'type': 'blob',
-				 			 'path': entry['path'],
-							 'sha1': entry['fields']['sha1']})
+		if entries is not None:
+			for entry in entries:
+				if entry['path'] == files:
+					body.append({'mode': entry['fields']['mode'],
+								'type': 'blob',
+								'path': files.replace(dirname + '/', ''),
+								'sha1': entry['fields']['sha1']})
 	ignored_dirs = get_ignored_files()
 	for dirs in sorted(walk_tuple[0][1]):
 		if dir_in_list(ignored_dirs, dirs) is False:
-				body_tree, _ = hash_tree(os.path.join(path, dirs), entries, os.path.join(dirname, dirs)) # os.path.join(dirname, dirs)
+				body_tree, _ = hash_tree(os.path.join(path, dirs), entries, os.path.join(dirname, dirs), dirs) # os.path.join(dirname, dirs)
+				#print(dirs)
 				if body_tree is not None:
+					#print(dirs)
 					body.append(body_tree)
-	if body is None:
-		return None
+	if len(body) == 0 and dirname != '':
+		return None, None
 	body.sort(key=lambda x: x['path'])
 	tree_data = b""
 	for object in body:
@@ -63,7 +65,7 @@ def hash_tree(path=None, entries=None, dirname=''):
 			fo.write(zlib.compress(tree_object))
 	return ({'mode': '040000',
 		  	 'type': 'tree',
-			 'path': dirname,
+			 'path': dir,
 			 'sha1': sha1}, tree_object)
 
 def get_commit_files():

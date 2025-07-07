@@ -10,9 +10,9 @@ def usage_msg():
 	'\thash_object\n'\
 	'\tcommit')
 
-def find_gitlite_repo(root=True):
+def find_gitlite_repo(root=True, path='.'):
 	#try:
-	path = os.path.abspath('.')
+	path = os.path.abspath(path)
 	while path != os.path.dirname(path):
 		if os.path.isdir(os.path.join(path, '.gitlite')):
 			if root is False:
@@ -47,13 +47,12 @@ def get_ignored_files():
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	if not os.path.exists(os.path.join(path, '.gitliteignore')):
-		return [".gitlite/", ".gitliteconfig"]
+		return [".gitlite/"]
 	lines = []
 	with open(os.path.join(path, '.gitliteignore'), 'r') as f:
 		for line in f:
 			lines.append(line.strip())
 	lines.append(".gitlite/")
-	lines.append(".gitliteconfig")
 	return lines
 
 def path_ignored(file, ignored_list, path):
@@ -99,7 +98,7 @@ def check_author_syntax(split):
 		
 
 def get_author():
-	path = find_gitlite_repo(False)
+	path = find_gitlite_repo()
 	if path is None:
 		print('fatal: not gitlite repository found')
 		sys.exit(1)

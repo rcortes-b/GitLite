@@ -6,15 +6,20 @@ def write_tree(args=None):
 	path=None
 	try:
 		if args and args.prefix:
-			if not os.path.exists(os.path.join(os.path.abspath('.'), args.prefix)):
+			if not os.path.exists(os.path.abspath(args.prefix)):
 				raise Exception('subdirectory is not valid')
-			path = os.path.join(os.path.abspath('.'), args.prefix)
+			path = os.path.abspath(args.prefix)
+			if find_gitlite_repo(False, path=path) is None:
+				print(f"fatal: gitlite-write-tree: prefix {args.prefix} not found")
+				sys.exit(1)
 		else:
 			path = find_gitlite_repo(False)
 			if path is None:
 				print('fatal: not gitlite repository found')
 				sys.exit(1)
-		data, tree_data = hash_tree()
+		if not args.prefix:
+			args.prefix=''
+		data, tree_data = hash_tree(path=path, dirname=args.prefix)
 		path = find_gitlite_repo(False)
 		if path is None:
 			print('fatal: not gitlite repository found')

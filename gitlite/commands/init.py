@@ -14,7 +14,7 @@ def init(args):
 		gitconfig.append('[user]')
 		gitconfig.append(f"\t\temail = {args.email if args.email else 'default@defaultmail.com'}")
 		gitconfig.append(f"\t\tname = {args.author if args.author else 'default'}")
-		with open(os.path.join(args.repo_name, '.gitliteconfig'), 'w') as f:
+		with open(os.path.join(args.repo_name, prog_name, '.gitliteconfig'), 'w') as f:
 			f.write('\n'.join(gitconfig) + '\n')
 		print('Repository has been created succesfully!')
 	except:

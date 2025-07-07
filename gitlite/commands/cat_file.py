@@ -24,7 +24,8 @@ def parse_tree(data):
 		obj_type = 'tree' if mode == '040000' else 'blob'
 		lines.append({'obj_type': obj_type,
 					  'sha': sha,
-					  'path': path})
+					  'path': path,
+					  'mode': mode})
 	return lines
 
 def read_file(object_id):
@@ -44,6 +45,7 @@ def read_file(object_id):
 	return fileAttributes(obj_type, size, body)
 
 def cat_file(args):
+	tree_data = None
 	try:
 		fileObject = read_file(args.object)
 		if args.object_type is not None:
@@ -52,7 +54,7 @@ def cat_file(args):
 			if args.object_type == 'tree':
 				if fileObject.type != 'tree':
 					raise Exception('Requested type with object type don\'t match')
-				parse_tree(fileObject.body)
+				tree_data = parse_tree(fileObject.body)
 			elif args.object_type == 'blob':
 				if fileObject.type != 'blob':
 					raise Exception('Requested type with object type don\'t match')
@@ -70,11 +72,14 @@ def cat_file(args):
 				print(fileObject.size)
 			else:
 				if fileObject.type == 'tree':
-					parse_tree(fileObject.body)
+					tree_data = parse_tree(fileObject.body)
 				elif fileObject.type == 'blob':
 					print(fileObject.body.decode(), end='')
 				else:
 					print(fileObject.body.decode())
+		if tree_data is not None:
+			for data in tree_data:
+				print(f"{data['mode']} {data['obj_type']} {data['sha']}\t{data['path']}")
 	except Exception as e:
 		print(f'Error: {e}')
 		sys.exit(1)
