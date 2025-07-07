@@ -26,8 +26,7 @@ def parse_args():
 	### HASH-OBJECT
 	hash_object_command = commands.add_parser('hash-object')
 	hash_object_command.add_argument('-w', '--write', required=False, action='store_true', help='store the object hashed')
-	hash_object_command.add_argument('-t', '--type', required=False, type=str, help='specify the type of the object to be created')
-	hash_object_command.add_argument('file', help='File to be hashed and maybe stored')
+	hash_object_command.add_argument('file', help='file to be hashed and maybe stored')
 	hash_object_command.set_defaults(func=hash_object)
 	### CAT-FILE
 	cat_file_command = commands.add_parser('cat-file', description='provide contents or details of repository objects')
