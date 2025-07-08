@@ -11,6 +11,7 @@
 - [🛠️ Installation](#-installation)
 - [🚀 Usage](#-usage)
 - [🧾 Commands](#commands)
+  - [🧱 Command: `init`](-command-init)
 - [🧾 Next features / To Do List](#-next-features--to-do-list)
 - [🤝 Contributing](#contributing)
 - [🪪 License](#license)
@@ -77,3 +78,39 @@ You can use gitlite followed by any of the next commands:
 
 ```
 *Note: In the next section is detailed which features for each command has been implemented
+
+---
+
+## 🧾 Commands
+
+### 🧱 Command: `init`
+
+Initializes a new GitLite repository by creating the `.gitlite` directory along with the required structure:
+
+- `.gitlite/objects/` – stores all GitLite objects (blobs, trees, commits)  
+- `.gitlite/refs/heads/` – stores branch references  
+- `.gitlite/config` – stores repository-specific configuration like author and email
+
+Unlike Git, which uses a global config (`~/.gitconfig`), GitLite defines the **author identity per repository** to keep things simple and local — ideal for experimentation without needing centralized identity systems like GitHub.
+
+---
+
+#### 🔧 Usage
+
+| Option     | Description                           |
+| ---------- | ------------------------------------- |
+| `--author` | Set the name of the repository owner  |
+| `--email`  | Set the email of the repository owner |
+
+```bash
+gitlite init
+```
+Creates a .gitlite/ folder in the current directory.
+```bash
+gitlite init <name>
+```
+Creates a new folder named <name> and initializes .gitlite/ inside it.
+```bash
+gitlite init my_repo --author=rcortes- --email=randomemail@email.com
+```
+All in one init usage
