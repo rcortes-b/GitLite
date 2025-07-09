@@ -11,8 +11,9 @@
 - [🛠️ Installation](#%EF%B8%8F-installation)
 - [🚀 Usage](#-usage)
 - [🧾 Commands](#-commands)
-  - [🧱 Command: 'add'](-command-init)
-  - (-command-add)
+  - [🧱 Command: 'init'](-command-init)
+  - [🧱 Command: 'add'](-command-add)
+  - [🧱 Command: 'commit'](-command-commit)
 - [🧾 Next features / To Do List](#-next-features--to-do-list)
 - [🤝 Contributing](#contributing)
 - [🪪 License](#license)
@@ -117,7 +118,7 @@ gitlite init my_repo --author=rcortes- --email=randomemail@email.com
 All in one init usage
 
 
-### 🧱 Command: `add`
+### 🧱 Command: 'add'
 
 The `add` command updates the index with the current content found in the working directory, staging it for the next commit.
 
@@ -142,3 +143,31 @@ gitlite add --all/ or gitlite add -A
 Adds all the files found in the working tree to the index file
 
 *Note: Files that are listed in the '.gitliteignore' file are not written in the index file
+
+
+### 🧱 Command: 'commit'
+
+The `commit` command saves a snapshot of the current index (staged changes) into the GitLite object database. This creates a new commit object pointing to the current tree state and links it to the previous commit (if any).
+
+- 🧾 Each commit stores:
+  - A reference to the current tree (from `write-tree`)
+  - A parent commit (if it exists)
+  - Metadata like author name, email, and date
+  - A commit message
+
+---
+
+#### 🔧 Usage
+
+| Option     | Description                             |
+| ---------- | --------------------------------------- |
+| `-m`       | The commit message which will be stored |
+
+```bash
+gitlite commit -m "your commit message"
+```
+
+> ⚠️ Unlike Git, GitLite currently supports only the `-m` option and does not track how many files were modified, added, or deleted in the commit.  
+> ✅ If the commit is successful, GitLite prints a simple confirmation message.
+
+
