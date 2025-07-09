@@ -8,10 +8,11 @@
 
 - [🎯 Purpose](#-purpose)
 - [📚 References & Inspiration](#-references--inspiration)
-- [🛠️ Installation](#-installation)
+- [🛠️ Installation](#%EF%B8%8F-installation)
 - [🚀 Usage](#-usage)
-- [🧾 Commands](#commands)
-  - [🧱 Command: `init`](-command-init)
+- [🧾 Commands](#-commands)
+  - [🧱 Command: 'add'](-command-init)
+  - (-command-add)
 - [🧾 Next features / To Do List](#-next-features--to-do-list)
 - [🤝 Contributing](#contributing)
 - [🪪 License](#license)
@@ -83,7 +84,7 @@ You can use gitlite followed by any of the next commands:
 
 ## 🧾 Commands
 
-### 🧱 Command: `init`
+### 🧱 Command: 'init'
 
 Initializes a new GitLite repository by creating the `.gitlite` directory along with the required structure:
 
@@ -114,3 +115,30 @@ Creates a new folder named <name> and initializes .gitlite/ inside it.
 gitlite init my_repo --author=rcortes- --email=randomemail@email.com
 ```
 All in one init usage
+
+
+### 🧱 Command: `add`
+
+The `add` command updates the index with the current content found in the working directory, staging it for the next commit.
+
+- 📄 `.gitlite/index` – The **index file** in GitLite acts as a **staging area**. It tracks which files are staged and ready to be committed.
+
+---
+
+#### 🔧 Usage
+
+| Option     | Description                           |
+| ---------- | ------------------------------------- |
+| `--all`    | Add all changes from the working tree |
+
+```bash
+gitlite add <file> [<file>...]
+```
+Adds the files given as parameter to the index file or replace the old ones for its new state
+
+```bash
+gitlite add --all/ or gitlite add -A
+```
+Adds all the files found in the working tree to the index file
+
+*Note: Files that are listed in the '.gitliteignore' file are not written in the index file
