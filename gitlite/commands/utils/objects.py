@@ -96,3 +96,33 @@ def get_commit_files():
 			for sub_files in sub_tree:
 				parent_tree.append(sub_files)
 	return parent_tree
+
+def get_commit_files_v2():
+	path = os.path.join(find_gitlite_repo(), 'refs/heads/main')
+
+	if not os.path.exists(path):
+		return None
+		entries = read_index()
+		index_files = []
+		all_files = get_all_files()
+		if all_files is None:
+			return None
+		for entry in entries:
+			for file in all_files:
+				if entry['path'] == file:
+					('\t', f"\033[92m new file:\t{entry['path']}\033[0m")
+		return
+
+	with open(path, 'r') as f:
+		sha = f.read().replace('\n', '')
+	commit_body = read_file(sha).body.decode()
+	tree_sha = commit_body[5:45]
+	parent_tree = parse_tree(read_file(tree_sha).body)
+
+	for files in parent_tree:
+		if files['obj_type'] == 'tree':
+			sub_tree = parse_tree(read_file(files['sha']).body)
+			parent_tree.remove(files)
+			for sub_files in sub_tree:
+				parent_tree.append(sub_files)
+	return parent_tree

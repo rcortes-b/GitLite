@@ -53,15 +53,15 @@ def cat_file(args):
 				raise Exception('You cannot define a type and an option at the same time.')
 			if args.object_type == 'tree':
 				if fileObject.type != 'tree':
-					raise Exception('Requested type with object type don\'t match')
+					raise Exception('Requested type with object type doesn\'t match')
 				tree_data = parse_tree(fileObject.body)
 			elif args.object_type == 'blob':
 				if fileObject.type != 'blob':
-					raise Exception('Requested type with object type don\'t match')
+					raise Exception('Requested type with object type doesn\'t match')
 				print(fileObject.body.decode(), end='')
 			else:
 				if fileObject.type != 'commit':
-					raise Exception('Requested type with object type don\'t match')
+					raise Exception('Requested type with object type doesn\'t match')
 				print(fileObject.body.decode())
 		else:
 			if not args.type and not args.size and not args.print:

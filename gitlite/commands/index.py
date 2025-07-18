@@ -26,7 +26,7 @@ def create_index_entry(path):
 
 	dev = stat_result.st_dev
 	ino = stat_result.st_ino
-	mode = stat_result.st_mode
+	mode = 100644
 	uid = stat_result.st_uid
 	gid = stat_result.st_gid
 	size = stat_result.st_size
@@ -53,7 +53,8 @@ def create_index_entry(path):
 
 def write_index(paths, index_path, index_entries=None):
 	entries = []
-
+	if paths is None:
+		return
 	if index_entries is not None:
 		for p in sorted(paths):
 			found = False
@@ -68,7 +69,6 @@ def write_index(paths, index_path, index_entries=None):
 		#print('index entries', index_entries)
 	else:
 		entries = [create_index_entry(p) for p in sorted(paths)]
-	print(paths)
 	header = struct.pack("!4sLL", b"DIRC", 2, len(entries))
 	body = b"".join(entries)
 	data = header + body
