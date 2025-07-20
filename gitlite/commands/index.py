@@ -53,27 +53,27 @@ def create_index_entry(path):
 
 def write_index(paths, index_path, index_entries=None):
 	entries = []
-	if paths is None:
-		return
-	if index_entries is not None:
-		for p in sorted(paths):
-			found = False
-			for entry in index_entries:
-				if entry['path'] == p:
-					found = True
-					break
-			if found is False:
-				entries.append(create_index_entry(p))
-			else:
-				entries.append(entry['raw'])
-		#print('index entries', index_entries)
-	else:
-		entries = [create_index_entry(p) for p in sorted(paths)]
+
+	if paths is None and index_entries:
+		for entry in index_entries:
+			entries.append(entry['raw'])
+	elif not (paths is None and index_entries is None):	 
+		if index_entries is not None:
+			for p in sorted(paths):
+				found = False
+				for entry in index_entries:
+					if entry['path'] == p:
+						found = True
+						break
+				if found is False:
+					entries.append(create_index_entry(p))
+				else:
+					entries.append(entry['raw'])
+		else:
+			entries = [create_index_entry(p) for p in sorted(paths)]
 	header = struct.pack("!4sLL", b"DIRC", 2, len(entries))
 	body = b"".join(entries)
 	data = header + body
-
-
 	checksum = hashlib.sha1(data).digest()
 	with open(index_path, 'wb') as f:
 		f.write(data + checksum)

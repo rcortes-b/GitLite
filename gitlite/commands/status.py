@@ -66,6 +66,9 @@ def changes_to_add(entries=None, all_files=None, path=None):
 				if entry['fields']['sha1'] != hash_blob(os.path.join(path, entry['path']), False):
 					message_trigger = message_check(message_trigger, mode=1)
 					print('\t', f"\033[91m modified:\t{entry['path']}\033[0m")
+			else:
+				message_trigger = message_check(message_trigger, mode=1)
+				print('\t', f"\033[91m deleted:\t{entry['path']}\033[0m")
 	return message_trigger
 
 def untracked_files(all_files=None, path_index_entries=None):
@@ -89,6 +92,8 @@ def status(args):
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	index_entries = read_index()
+	if index_entries is not None and len(index_entries) == 0:
+		index_entries = None
 	path_index_entries = None
 	if index_entries is not None:
 		path_index_entries = [entry['path'] for entry in index_entries]

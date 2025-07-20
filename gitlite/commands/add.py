@@ -1,10 +1,8 @@
 import os, sys
-from .utils.utils import find_gitlite_repo, get_all_files
+from .utils.utils import find_gitlite_repo, get_all_files, file_in_list
 from .index import *
 
 def empty_repository(files, entries, path):
-	if entries is None:
-		return None
 	if files:
 		for file in files:
 			for entry in entries:
@@ -14,9 +12,7 @@ def empty_repository(files, entries, path):
 	else:
 		entries.clear()
 	if len(entries) == 0:
-		os.remove(path)
-		f = open(path, 'w')
-		f.close()
+		entries = None
 	return entries
 
 def check_if_files_exists(files, entries, all_files):
@@ -53,31 +49,36 @@ def add(args):
 		f = open(index_path, 'w')
 		f.close()
 
-	### Get valid files, discard .gitliteignore paths
 	all_files = get_all_files()
-	if all_files is None and read_index() is None:
+	index_entries = read_index()
+
+	if all_files is None and index_entries is None:
 		return
 	elif all_files is None:
-		empty_repository(args.files, read_index(), index_path)
+		entries = empty_repository(args.files, index_entries, index_path)
+		write_index(all_files, index_path, entries)
 	else:
 		arg_files = []
 		if args.files:
 			path = gitlite_path.replace('.gitlite', '')
-			index_entries = read_index()
 			check_if_files_exists(args.files, index_entries, all_files)
 			for files in args.files:
 				normalized_path = os.path.abspath(files).replace(path, '')
-				for f in all_files:
-					if f == normalized_path and index_entries is not None:
-						for entry in index_entries:
-							if entry['path'] == f:
-								index_entries.remove(entry)
-					elif f == normalized_path and index_entries is None:
-						arg_files.append(f)
+				if file_in_list(all_files, files) is True:
+					for f in all_files:
+						if f == normalized_path and index_entries is not None:
+							for entry in index_entries:
+								if entry['path'] == f:
+									index_entries.remove(entry) ### Remove the old entry data of each args.files
+						elif f == normalized_path and index_entries is None: ### If index doesnt exist, only the args.files will be added
+							arg_files.append(f)
 			if not arg_files:
-				arg_files = [entry['path'] for entry in index_entries]
+				arg_files = [entry['path'] for entry in index_entries] ### Get every entry['path']
 				for f in args.files:
-					arg_files.append(f)
+					if file_in_list(all_files, f) is True:
+						arg_files.append(f)
+					else:
+						arg_files.remove(f)
 			all_files = arg_files
 			write_index(all_files, index_path, index_entries)
 		else:
