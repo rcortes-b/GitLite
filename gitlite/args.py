@@ -7,6 +7,7 @@ from .commands.write_tree import write_tree
 from .commands.add import add
 from .commands.commit import commit
 from .commands.ls_files import ls_files
+from .commands.rm import rm
 
 def load_arguments(parser):
 	parser.add_argument('-v', '--version', action='version', version='GitLite Version 0.0.1', help='check the current gitlite version')
@@ -62,5 +63,11 @@ def parse_args():
 	ls_files_group.add_argument('-m', '--modified', action='store_true', help='show files with an unstaged modification')
 	ls_files_group.add_argument('-o', '--others', action='store_true', help='show other (i.e. untracked) files in the output')
 	ls_files_command.set_defaults(func=ls_files)
-
+	### RM
+	rm_command = commands.add_parser('rm', help='remove files matching pathspec from the index, or from the working tree and the index')
+	rm_command.add_argument('files', nargs='*', help='files to remove or leading directory name')
+	rm_command.add_argument('-f', '--force', action='store_true', help='override the up-to-date check.')
+	rm_command.add_argument('--cached', action='store_true', help='use this option to unstage and remove paths only from the index')
+	rm_command.add_argument('-r', action='store_true', help='allow recursive removal when a leading directory name is given')
+	rm_command.set_defaults(func=rm)
 	return parser.parse_args()
