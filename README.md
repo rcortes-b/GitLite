@@ -308,10 +308,10 @@ Below is a checklist of implemented and planned features for GitLite, along with
 - [x] `hash-object` – Compute and optionally store the SHA-1 hash of a file’s contents as a blob object
 - [x] `write-tree` – Write a tree object representing the current state of the index
 - [x] `cat-file` – Inspect stored GitLite objects (blob, tree, commit) by type, content, or size
+- [x] `status` – Show the state of the working directory and staging area (staged, modified, untracked, deleted)
 
 ### 🛠️ In Progress / Planned
 
-- [ ] `status` – Show the state of the working directory and staging area (staged, modified, untracked, deleted)
 - [ ] `rm` – Remove files from both the working directory and index
 - [ ] `restore` – Restore files from the index or a specific commit to the working directory
 - [ ] Refactor internal code – Restructure modules for better readability, maintainability, and extensibility
