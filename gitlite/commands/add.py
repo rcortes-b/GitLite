@@ -2,6 +2,15 @@ import os, sys
 from .utils.utils import find_gitlite_repo, get_all_files, file_in_list
 from .index import *
 
+def expand_directory(dir, list_object, all_files, path):
+	for rootdir, dirname, filenames in os.walk(os.path.abspath(dir)):
+		for files in filenames:
+			file = os.path.join(rootdir, files).replace(path, '')
+			if file_in_list(all_files, file) is True: ### Check if file is not ignored
+				list_object.append(file)
+	return list_object
+		
+
 def empty_repository(files, entries, path):
 	if files:
 		for file in files:
@@ -63,6 +72,9 @@ def add(args):
 			path = gitlite_path.replace('.gitlite', '')
 			check_if_files_exists(args.files, index_entries, all_files)
 			for files in args.files:
+				if os.path.isdir(files):
+					args.files = expand_directory(files, args.files, all_files, path)
+					continue
 				normalized_path = os.path.abspath(files).replace(path, '')
 				if file_in_list(all_files, files) is True:
 					for f in all_files:
@@ -75,10 +87,11 @@ def add(args):
 			if not arg_files:
 				arg_files = [entry['path'] for entry in index_entries] ### Get every entry['path']
 				for f in args.files:
-					if file_in_list(all_files, f) is True:
-						arg_files.append(f)
-					else:
-						arg_files.remove(f)
+					if not os.path.isdir(f):
+						if file_in_list(all_files, f) is True:
+							arg_files.append(f)
+						else:
+							arg_files.remove(f)
 			all_files = arg_files
 			write_index(all_files, index_path, index_entries)
 		else:
