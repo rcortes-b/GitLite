@@ -12,7 +12,14 @@ class fileData:
 		if self.type == 1 and args.r is False:
 			print('fatal: not removing \'c\' recursively without -r')
 			sys.exit(1)
-		
+
+def check_if_exists(data, name):
+	if data is None or len(data) == 0:
+		return False
+	for obj in data:
+		if obj.name == name:
+			return True
+	return False
 
 def parse_data(args, path):
 	data = []
@@ -21,11 +28,16 @@ def parse_data(args, path):
 			if args.r is False:
 				print('fatal: not removing \'c\' recursively without -r')
 				sys.exit(1)
-			args.files = expand_directory(files, args.files, get_all_files(), path  + '/')
-			data.append(fileData(files, True, args))
+			expanded_files = expand_directory(files, [], get_all_files(), path  + '/')
+			if check_if_exists(data, files) is False:
+				data.append(fileData(files, True, False, args))
+			for f_expanded in expanded_files:
+				if check_if_exists(data, f_expanded) is False:
+					data.append(fileData(f_expanded, os.path.isdir(f_expanded), True, args))
 			continue
 		normalized_path = os.path.abspath(files).replace(path + '/', '')
-		data.append(fileData(normalized_path, os.path.isdir(normalized_path), args))
+		if check_if_exists(data, normalized_path) is False:
+			data.append(fileData(normalized_path, os.path.isdir(normalized_path), False, args))
 	return data
 
 def checker(args, data, index):
@@ -44,7 +56,8 @@ def checker(args, data, index):
 		if commit_files is None:
 			print('error: the following files have changes staged in the index:')
 			for obj in data:
-				print('\t'f"{obj.name}"'')
+				if obj.type == 0:
+					print('\t'f"{obj.name}"'')
 			print('(use --cached to keep the file, or -f to force removal)')
 			sys.exit(1)
 		for obj in data:
@@ -74,9 +87,13 @@ def delete_files(data, index, is_cached):
 					os.remove(os.path.abspath(obj.name))
 				print('rm \''f"{obj.name}"'\'')
 				break
-	for dir in dirs:
+	for dir in reversed(dirs):
 		### CHECK DIRECTORY SIZE, IF ITS 0, remove
+		try:
 			os.rmdir(os.path.abspath(dir.name))
+		except OSError:
+			pass  # Skip if directory is not empty
+
 	path = os.path.join(find_gitlite_repo(), 'index')
 	if len(index) == 0:
 		index = None
@@ -91,5 +108,4 @@ def rm(args):
 	data = parse_data(args, path)
 	checker(args, data, index)
 	delete_files(data, index, args.cached)
-	### COMPROBAR QUE PASA CUANDO UN FILE ES DIRECTORY Y QUE ERROR SALE EN CASO DE QUERER HACERLO CON LA -r OPTION
 	#-r --force --cached

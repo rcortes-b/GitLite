@@ -3,7 +3,13 @@ from .utils.utils import find_gitlite_repo, get_all_files, file_in_list
 from .index import *
 
 def expand_directory(dir, list_object, all_files, path):
+	rm_expansor = False
+	if len(list_object) == 0:
+		rm_expansor = True
 	for rootdir, dirname, filenames in os.walk(os.path.abspath(dir)):
+		if rm_expansor is True:
+			for dirs in dirname:
+				list_object.append(os.path.join(rootdir,dirs).replace(path, ''))
 		for files in filenames:
 			file = os.path.join(rootdir, files).replace(path, '')
 			if file_in_list(all_files, file) is True: ### Check if file is not ignored
