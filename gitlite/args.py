@@ -8,6 +8,7 @@ from .commands.add import add
 from .commands.commit import commit
 from .commands.ls_files import ls_files
 from .commands.rm import rm
+from .commands.restore import restore
 
 def load_arguments(parser):
 	parser.add_argument('-v', '--version', action='version', version='GitLite Version 0.0.1', help='check the current gitlite version')
@@ -70,4 +71,10 @@ def parse_args():
 	rm_command.add_argument('--cached', action='store_true', help='use this option to unstage and remove paths only from the index')
 	rm_command.add_argument('-r', action='store_true', help='allow recursive removal when a leading directory name is given')
 	rm_command.set_defaults(func=rm)
+	### RESTORE
+	restore_command = commands.add_parser('restore', help='helps to unstage or even discard uncommitted local changes.')
+	restore_command.add_argument('files', nargs='*', help='the name of a file (or multiple files) you want to restore')
+	restore_command.add_argument('-s', '--source', type=str, help='specify the commitcto restore from')
+	restore_command.add_argument('-S', '--staged', action='store_true', help='removes the file from the Staging Area, but leaves its actual modifications untouched')
+	restore_command.set_defaults(func=restore)
 	return parser.parse_args()
