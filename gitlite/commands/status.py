@@ -15,6 +15,7 @@ def message_check(message_trigger, mode=0):
 		elif mode == 1:
 			print('\nChanges not staged for commit:')
 			print('  (use "git add <file>..." to update what will be committed)')
+			print('  (use "git restore <file>..." to discard changes in working directory)')
 		else:
 			print('\nUntracked files:')
 			print('  (use "git add <file>..." to include in what will be committed)')

@@ -81,5 +81,6 @@ def commit(args):
 	with open(path, 'wb') as f:
 		f.write(zlib.compress(full_data))
 	print('commit has been succesfully created, modifications saved')
+	print('commit sha is:', sha1)
 		
 	

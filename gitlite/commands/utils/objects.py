@@ -77,6 +77,18 @@ def get_commit_files():
 		sha = f.read().replace('\n', '')
 	commit_body = read_file(sha).body.decode()
 	tree_sha = commit_body[5:45]
+#	parent_tree = parse_tree(read_file(tree_sha).body)
+#
+#	for files in parent_tree:
+#		if files['obj_type'] == 'tree':
+#			sub_tree = parse_tree(read_file(files['sha']).body)
+#			parent_tree.remove(files)
+#			for sub_files in sub_tree:
+#				parent_tree.append(sub_files)
+#	return parent_tree
+	return get_tree_files(tree_sha)
+
+def get_tree_files(tree_sha):
 	parent_tree = parse_tree(read_file(tree_sha).body)
 
 	for files in parent_tree:
@@ -84,5 +96,6 @@ def get_commit_files():
 			sub_tree = parse_tree(read_file(files['sha']).body)
 			parent_tree.remove(files)
 			for sub_files in sub_tree:
+				sub_files['path'] = os.path.join(files['path'], sub_files['path'])
 				parent_tree.append(sub_files)
 	return parent_tree

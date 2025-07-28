@@ -310,11 +310,12 @@ Below is a checklist of implemented and planned features for GitLite, along with
 - [x] `cat-file` – Inspect stored GitLite objects (blob, tree, commit) by type, content, or size
 - [x] `status` – Show the state of the working directory and staging area (staged, modified, untracked, deleted)
 - [X] `rm` – Remove files from both the working directory and index
+- [X] `restore` – Restore files from the index or a specific commit to the working directoryç
 
 ### 🛠️ In Progress / Planned
 
-- [ ] `restore` – Restore files from the index or a specific commit to the working directoryç
 - [ ] `rm and restore README` – Update README with the 'rm' and 'restore' commands!!!
+- [ ] `status error fix` – Fix status command errors ! Some errors seen while working on restore command
 - [ ] Refactor internal code – Restructure modules for better readability, maintainability, and extensibility
 - [ ] Keep testing the program – Add unit tests and test real-world workflows to ensure stability and correctness
 

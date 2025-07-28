@@ -1,15 +1,15 @@
 import os, hashlib, struct, sys, zlib
 from .utils.utils import find_gitlite_repo
 
-def create_index_entry(path):
+def create_index_entry(path, content=None):
 	gitlite_path = find_gitlite_repo(False)
 	if gitlite_path is None:
 		print('fatal: not gitlite repository found')
 		sys.exit(1)
 	stat_result = os.stat(os.path.join(gitlite_path, path))
-
-	with open(os.path.join(gitlite_path, path), "rb") as f:
-		content = f.read()
+	if content is None:
+		with open(os.path.join(gitlite_path, path), "rb") as f:
+			content = f.read()
 	header = '{} {}'.format('blob', len(content)).encode()
 	full_data = header + b'\x00' + content
 	sha1 = hashlib.sha1(full_data).hexdigest()
@@ -51,13 +51,13 @@ def create_index_entry(path):
 	
 	return entry
 
-def write_index(paths, index_path, index_entries=None):
-	entries = []
-
+def write_index(paths, index_path, index_entries=None, entries=None):
+	if entries is None:
+		entries = []
 	if paths is None and index_entries:
 		for entry in index_entries:
 			entries.append(entry['raw'])
-	elif not (paths is None and index_entries is None):	 
+	elif paths is not None and index_entries is not None:
 		if index_entries is not None:
 			for p in sorted(paths):
 				found = False

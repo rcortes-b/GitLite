@@ -101,4 +101,4 @@ def add(args):
 			all_files = arg_files
 			write_index(all_files, index_path, index_entries)
 		else:
-			write_index(all_files, index_path)
+			write_index(all_files, index_path, [])

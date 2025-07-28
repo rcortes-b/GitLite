@@ -76,5 +76,6 @@ def parse_args():
 	restore_command.add_argument('files', nargs='*', help='the name of a file (or multiple files) you want to restore')
 	restore_command.add_argument('-s', '--source', type=str, help='specify the commitcto restore from')
 	restore_command.add_argument('-S', '--staged', action='store_true', help='removes the file from the Staging Area, but leaves its actual modifications untouched')
+	restore_command.add_argument('-W', '--worktree', action='store_true', help='restores the content from the working directory')
 	restore_command.set_defaults(func=restore)
 	return parser.parse_args()
