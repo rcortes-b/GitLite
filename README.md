@@ -19,6 +19,8 @@
   - [🧱 Command: 'hash-object'](#-command-hash-object)
   - [🧱 Command: 'write-tree'](#-command-write-tree)
   - [🧱 Command: 'cat-file'](#-command-cat-file)
+  - [🧱 Command: 'rm'](#-command-rm)
+  - [🧱 Command: 'restore'](#-command-restore)
 - [🧾 Next features / To Do List](#-next-features--to-do-list)
 - [🤝 Contributing](#-contributing)
 
@@ -295,6 +297,48 @@ gitlite cat-file [-s | -p | -t] <object>
 
 ---
 
+### 🧱 Command: `rm`
+
+The `rm` command removes files from the **index** (staging area), and optionally from the **working directory**. It's useful when you want to stop tracking a file or delete it entirely.
+
+---
+
+#### 🔧 Usage
+
+| Option            | Description                                                                 |
+| ----------------- | --------------------------------------------------------------------------- |
+| `--cached`        | Remove file(s) *only from the index*, keeping them in the working directory |
+| `--force / -f`    | Force removal even if file(s) have changes                                  |
+| `-r`              | Recursively remove directories and their tracked contents                   |
+
+```bash
+gitlite rm [options] <file> <...>
+```
+
+---
+
+### 🧱 Command: `restore`
+
+This command is used to restore files either from the index or a specific commit (like `HEAD`) into the **working directory**, the **index**, or both.
+
+It behaves similarly to Git’s `restore` command and allows you to undo changes, recover lost modifications, or re-stage content based on the state of the project at a certain point.
+
+---
+
+#### 🔧 Usage
+
+| Option / Flag        | Description                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `--source / -s <ref>`| Specifies the source tree to restore from (e.g., a commit SHA)              |
+| `--staged / -S`      | Restores the file(s) into the **index**                                     |
+| `--worktree / -W`    | Restores the file(s) into the **working directory**                         |
+
+```bash
+gitlite restore [options] <file>
+```
+
+---
+
 ## 🧾 Next Features / To Do List
 
 Below is a checklist of implemented and planned features for GitLite, along with short descriptions of their purpose:
@@ -314,7 +358,6 @@ Below is a checklist of implemented and planned features for GitLite, along with
 
 ### 🛠️ In Progress / Planned
 
-- [ ] `rm and restore README` – Update README with the 'rm' and 'restore' commands!!!
 - [ ] Refactor internal code – Restructure modules for better readability, maintainability, and extensibility
 - [ ] Keep testing the program – Add unit tests and test real-world workflows to ensure stability and correctness
 
