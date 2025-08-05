@@ -315,7 +315,6 @@ Below is a checklist of implemented and planned features for GitLite, along with
 ### 🛠️ In Progress / Planned
 
 - [ ] `rm and restore README` – Update README with the 'rm' and 'restore' commands!!!
-- [ ] `status error fix` – Fix status command errors ! Some errors seen while working on restore command
 - [ ] Refactor internal code – Restructure modules for better readability, maintainability, and extensibility
 - [ ] Keep testing the program – Add unit tests and test real-world workflows to ensure stability and correctness
 

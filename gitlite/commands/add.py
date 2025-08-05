@@ -2,6 +2,19 @@ import os, sys
 from .utils.utils import find_gitlite_repo, get_all_files, file_in_list
 from .index import *
 
+def expand_files_to_delete(dir, list_object, index_entries):
+	index = [entry['path'] for entry in index_entries]
+	abs_dir = os.path.abspath(dir)
+	dir_len = len(abs_dir)
+	for file in index:
+		abs_file = os.path.abspath(file)
+		file_len = len(abs_file)
+		if not os.path.exists(abs_file):
+			trimmed_len = len(abs_file.replace(abs_dir, ''))
+			if trimmed_len == file_len - dir_len and trimmed_len > 0:
+				list_object.append(file)
+	return list_object
+
 def expand_directory(dir, list_object, all_files, path):
 	rm_expansor = False
 	if len(list_object) == 0:
@@ -80,6 +93,7 @@ def add(args):
 			for files in args.files:
 				if os.path.isdir(files):
 					args.files = expand_directory(files, args.files, all_files, path)
+					args.files = expand_files_to_delete(files, args.files, index_entries)
 					continue
 				normalized_path = os.path.abspath(files).replace(path, '')
 				if file_in_list(all_files, files) is True:
